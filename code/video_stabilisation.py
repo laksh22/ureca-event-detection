@@ -39,7 +39,7 @@ def fixBorder(frame):
 SMOOTHING_RADIUS = 50
 
 # Read input video
-cap = cv2.VideoCapture('video.mp4')
+cap = cv2.VideoCapture('../data/aic19-track3-train-data/1.mp4')
 
 # Get frame count
 n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -98,7 +98,7 @@ for i in range(n_frames-2):
     # will only work with OpenCV-3 or less
     m = cv2.estimateRigidTransform(prev_pts, curr_pts, fullAffine=False)
 
-    # Extract traslation
+    # Extract translation
     dx = m[0, 2]
     dy = m[1, 2]
 
