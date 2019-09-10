@@ -53,9 +53,9 @@
    4. Slow car in fast lane
    5. Over-speeding
 3. Proposed system plan:
-   1. Stabilise video using OpenCV
+   1. Stabilise video using OpenCV ✔
    2. Background extraction to remove parked cars
-   3. Foreground extraction to select driveable areas
+   3. Foreground extraction (✔) to select driveable areas
    4. Lane detection to detect different lanes
    5. Car detection and tracking(SORT or DeepSORT)
    6. Extract average car speed for each lane
@@ -73,3 +73,9 @@
        1. If anomalous path and then car stops or slows down to upto 5% of its speed, accident.
 
 # Week 6 - 9th September to 15th September
+
+1. Created video stabilization script
+2. Downloaded AI City Challenge data
+3. Problems:
+   1. Video Stabilization is mediocre
+   2. In foreground extraction, shadow detected, cars not detected as single blob
