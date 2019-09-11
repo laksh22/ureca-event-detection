@@ -1,4 +1,4 @@
-# Import numpy and OpenCV
+#Video Stabilisation
 import numpy as np
 import cv2
 
