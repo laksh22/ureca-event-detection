@@ -1,4 +1,5 @@
-#Video Stabilisation
+# Video Stabilisation
+# TODO: Doesn't work with live video
 import numpy as np
 import cv2
 

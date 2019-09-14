@@ -54,7 +54,7 @@
    5. Over-speeding
 3. Proposed system plan:
    1. Stabilise video using OpenCV ✔
-   2. Background extraction to remove parked cars
+   2. Background extraction to detect stalled cars ✔
    3. Foreground extraction (✔) to select driveable areas
    4. Lane detection to detect different lanes
    5. Car detection and tracking(SORT or DeepSORT)
