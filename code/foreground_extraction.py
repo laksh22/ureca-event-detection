@@ -2,23 +2,29 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture('../data/aic19-track3-train-data/3.mp4')
-fgbg = cv2.createBackgroundSubtractorMOG2()
+capture = cv2.VideoCapture('../data/aic19-track3-train-data/3.mp4')
+subtractor = cv2.createBackgroundSubtractorMOG2()
 
 while True:
-    _, frame = cap.read()
+    _, frame = capture.read()
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray_frame = cv2.GaussianBlur(gray_frame, (5, 5), 0)
 
-    fgmask = fgbg.apply(gray_frame)
-    _, fgmask = cv2.threshold(fgmask, 5, 255, cv2.THRESH_BINARY)
+    # Noise reduction
+    blurred_frame = cv2.GaussianBlur(gray_frame, (5, 5), 0)
+    denoised_frame = cv2.morphologyEx(
+        blurred_frame, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+
+    # Foreground extraction
+    foreground = subtractor.apply(denoised_frame)
+    _, foreground = cv2.threshold(foreground, 5, 255, cv2.THRESH_BINARY)
 
     cv2.imshow("Original", frame)
-    cv2.imshow("Fg", fgmask)
+    cv2.imshow("Foreground", foreground)
+    cv2.imshow("Opening", denoised_frame)
 
     key = cv2.waitKey(30) & 0xff
     if key == 27:
         break
 
-cap.release()
+capture.release()
 cv2.destroyAllWindows()
