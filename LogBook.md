@@ -22,7 +22,7 @@
 1. Completed CNN on Udacity.
 2. Decided that project should detect road events using pre-existing techniques.
 3. Learnt object detection algorithms - R-CNN(Selective Search, etc.), Fast R-CNN, Faster R-CNN, SSD, and YOLO.
-4. Ideas - Detect weather conditions, use capsule network for object detection. Detect only changing pixels for foreground extraction. Begin by detecting lanes. Then detect paths. Then detect anomalies. Use C3D to detect overall anomaly then when detected, play back some footage to localize. Find average speed for lane. Flag anyone going too fast. Detect lanes and when anomaly detected, check if any car switching lanes too much. If stopping in traffic, detect how long stopped. If not stopped too long, normal.Segment moving objects first to extract cars. Detect cars in background plate as stalled cars if first moving and then not moving. Find a way to segment out the road. Try using Mask-RCNN since its good in high density cases. Use DeepSORT or SORT for tracking.
+4. Ideas - Detect weather conditions, use capsule network for object detection. Detect only changing pixels for foreground extraction. Begin by detecting lanes. Then detect paths. Then detect anomalies. Use C3D to detect overall anomaly then when detected, play back some footage to localize. Find average speed for lane. Flag anyone going too fast. Detect lanes and when anomaly detected, check if any car switching lanes too much. If stopping in traffic, detect how long stopped. If not stopped too long, normal. Segment moving objects first to extract cars. Detect cars in background plate as stalled cars if first moving and then not moving. Find a way to segment out the road. Try using Mask-RCNN since its good in high density cases. Use DeepSORT or SORT for tracking. Try creating average paths for cars on the road and detect anomalies if a path deviates from it.
 5. Current Methods:
    1. Tracking based - Use luminance contrast for background and foreground segmentation. Track between frames using matching matrices algorithm. Centroid of blob is used to plot trajectory. Use movements characteristics of blobs to guess events.
    2. Lane detection + Kalman Filter - Vanishing point prediction for lane detection. Gaussian background subtraction for motion detection. Kalman filter between frames for tracking. Trajectories are clustered to find lanes.
@@ -53,7 +53,7 @@
    4. Slow car in fast lane
    5. Over-speeding
 3. Proposed system plan:
-   1. Stabilise video using OpenCV ✔
+   1. Stabilise video using OpenCV (try making methods more robust to shaky videos)✔
    2. Background extraction to detect stalled cars ✔
    3. Foreground extraction (✔) to select driveable areas
    4. Lane detection to detect different lanes
@@ -70,7 +70,7 @@
    11. Over-speeding:
        1. If speed of car 10% greater than highest average speed of all lanes, over-speeding
    12. Car accident:
-       1. If anomalous path and then car stops or slows down to upto 5% of its speed, accident.
+       1. If anomalous path and then car stops or slows down to upto 5% of its speed, accident. Abrupt speed change. (For stalling, gradual speed change).
 
 # Week 6 - 9th September to 15th September
 
@@ -79,3 +79,19 @@
 3. Problems:
    1. Video Stabilization is mediocre
    2. In foreground extraction, shadow detected, cars not detected as single blob
+
+# Week 6 - 16th September to 22nd September
+
+1. Met with Dr. Tan Cheen Hau and got ideas approved.
+2. Improved foreground extraction technique by using Opening and Gaussian blur for the mask.
+3. Researched on Deep SORT and got Deep SORT running on local machine.
+
+# Week 7 - 23rd September to 29th September
+
+1. Deep SORT is too heavy and required GPU for efficient running(0.5 FPS on CPU). Researched on other algorithms instead.
+2. Implemented YOLO Lite(https://arxiv.org/pdf/1811.05588.pdf) in PyTorch for car detection and centroid tracking for object tracking in OpenCV. Using this since it is the most accurate and fastest object detection algorithm available as of now.
+3. Plan on creating custom CNN which improves upon YOLO Lite to make it more accurate and faster.
+
+# Week 8 - 30th September to 6th October
+
+1. Implemented YOLOv3 in PyTorch.

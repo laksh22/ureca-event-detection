@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture('../data/aic19-track3-train-data/2.mp4')
+cap = cv2.VideoCapture(0)
 _, frame = cap.read()
 
 average = np.float32(frame)
