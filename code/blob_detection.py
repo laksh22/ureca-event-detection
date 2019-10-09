@@ -34,3 +34,14 @@ while True:
 
 capture.release()
 cv2.destroyAllWindows()
+
+
+def blob_detect(frame, foreground, detector):
+    keypoints = detector.detect(foreground)
+
+    imgKeyPoints = cv2.drawKeypoints(frame, keypoints, np.array(
+        []), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    cv2.imshow("Keypoints", imgKeyPoints)
+
+    return imgKeyPoints

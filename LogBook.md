@@ -95,3 +95,6 @@
 # Week 8 - 30th September to 6th October
 
 1. Implemented YOLOv3 in PyTorch.
+
+# Week 9 - 7th October to 13th October
+1. Developed tracking scripts using Haar Cascade, YOLO, and Blob Detection.
