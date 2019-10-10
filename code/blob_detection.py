@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from foreground_extraction import get_foreground
-
+'''
 capture = cv2.VideoCapture('../data/aic19-track3-train-data/3.mp4')
 subtractor = cv2.createBackgroundSubtractorMOG2()
 params = cv2.SimpleBlobDetector_Params()
@@ -34,6 +34,7 @@ while True:
 
 capture.release()
 cv2.destroyAllWindows()
+'''
 
 
 def blob_detect(frame, foreground, detector):
@@ -41,7 +42,5 @@ def blob_detect(frame, foreground, detector):
 
     imgKeyPoints = cv2.drawKeypoints(frame, keypoints, np.array(
         []), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-    cv2.imshow("Keypoints", imgKeyPoints)
 
     return imgKeyPoints

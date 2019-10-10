@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load YOLO
-net = cv2.dnn.readNet("../data/yolov3-tiny.weights", "../data/yolov3-tiny.cfg")
+net = cv2.dnn.readNet("../data/yolov3.weights", "../data/yolov3.cfg")
 classes = []
 
 with open("../data/coco.names", "r") as f:
