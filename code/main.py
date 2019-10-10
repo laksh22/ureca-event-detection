@@ -14,7 +14,7 @@ subtractor = cv2.createBackgroundSubtractorMOG2()
 params = cv2.SimpleBlobDetector_Params()
 params.filterByArea = True
 params.minArea = 10
-params.maxArea = 1000000
+params.maxArea = 10000000000000
 params.filterByColor = True
 params.blobColor = 255
 blob_detector = cv2.SimpleBlobDetector_create(params)
@@ -24,6 +24,8 @@ average = np.float32(frame)
 
 while True:
     _, frame = capture.read()
+
+    print(frame.shape)
 
     # Background Extraction
     #background, average = extract_background(frame, average)
