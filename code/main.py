@@ -33,7 +33,7 @@ while True:
     # Foreground Extraction
     # TODO: Overlay onto actual frame
     foreground = get_foreground(frame, subtractor)
-    cv2.imshow("Foreground", foreground)
+    cv2.imshow("Foreground2", foreground)
 
     #=== DETECTION METHODS ===#
     # Detection using YOLO
