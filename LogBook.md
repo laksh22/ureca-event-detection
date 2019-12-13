@@ -94,7 +94,21 @@
 
 # Week 8 - 30th September to 6th October
 
-1. Implemented YOLOv3 in PyTorch.
+1. Implemented YOLOv3 in PyTorch and setup DarkNet.
 
 # Week 9 - 7th October to 13th October
-1. Developed tracking scripts using Haar Cascade, YOLO, and Blob Detection.
+
+1. Developed tracking scripts using Haar Cascade, YOLO(v3 as well as Tiny), Blob Detection, and HOG.
+2. The only decent object recognizer is YOLOv3 but it is too computationally heavy to be run on a CCTV.
+3. Began revising research papers to see how others conducted object detection and tracking on the NVIDIA AI City Challenge dataset.
+4. Created integrated pipeline for road mask generation, background extraction and foreground generation.
+
+# Week 17 - 2nd December to 8th December
+
+1. Met with Dr. Cheen Hau and discussed that bounding boxes will be given so don't need to focus on object detection.
+2. First step is to extract and cluster similar trajectories on the road to find common paths - https://arxiv.org/pdf/1802.06971.pdf, https://online-journals.org/index.php/i-joe/article/viewFile/3881/3315, code - https://github.com/jayachithra/T-DBSCANCoherent-Event-based-Surveillance-Video-Synopsis-Using-Trajectory-Clustering, article using KMeans - https://towardsdatascience.com/a-gentle-introduction-to-iot-gps-trajectory-clustering-and-geospatial-clustering-daba8da8c41e
+3. Now that paths are identified, need to determine average speed of each path - http://openaccess.thecvf.com/content_cvpr_2018_workshops/papers/w3/Hua_Vehicle_Tracking_and_CVPR_2018_paper.pdf or using optical flow for each path.
+4. Based on average speed for each path, we can determine which path has slower than average car and if any car exceeds the fastest path average speed.
+5. Car stalling can be detected using MOT - http://openaccess.thecvf.com/content_CVPRW_2019/papers/AI%20City/Zhao_Unsupervised_Traffic_Anomaly_Detection_Using_Trajectories_CVPRW_2019_paper.pdf
+6. Excessive lane jumping can be detected by keeping track of path ID of a bounding box and seeing if its moving window set is larger than a certain number.
+7. Car accident detection using motion interaction field - https://ieeexplore.ieee.org.remotexs.ntu.edu.sg/document/6977240

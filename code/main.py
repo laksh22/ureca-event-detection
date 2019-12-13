@@ -8,7 +8,7 @@ from background_extraction import extract_background
 from foreground_extraction import get_foreground
 from road_mask_creation import *
 
-capture = cv2.VideoCapture('../data/aic19-track3-train-data/3.mp4')
+capture = cv2.VideoCapture('../data/aic19-track3-train-data/2.mp4')
 
 subtractor = cv2.createBackgroundSubtractorMOG2()
 
@@ -38,8 +38,8 @@ while True:
     #foreground = get_foreground(frame, subtractor)
     #cv2.imshow("Foreground", foreground)
     # Road Mask
-    driveable_area = cv2.bitwise_and(mask, frame)
-    cv2.imshow("Driveable Area", driveable_area)
+    #driveable_area = cv2.bitwise_and(mask, frame)
+    #cv2.imshow("Driveable Area", driveable_area)
 
     #=== DETECTION METHODS ===#
     # Detection using YOLO
