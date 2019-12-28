@@ -1,11 +1,12 @@
-# Code for the paper "T-DBSCAN: A Spatiotemporal Density Clustering for GPS Trajectory Segmentation"
-
 import math
-
+"""
+T-DBSCAN
+Author: Jaya
+Source: Paper titled "T-DBSCAN: A Spatiotemporal Density Clustering for GPS Trajectory Segmentation"
+"""
 """
 INPUTS:
     df={o1,o2,...,on} Set of objects
-        each row - index, x, y
     CEps = Outer radius for density calculation
     Eps = Inner radius defining the density calculation are
     MinPts = Minimun number of points in neighborhood
@@ -14,27 +15,30 @@ OUTPUT:
 """
 
 def T_DBSCAN(df, CEps,Eps, MinPts):
-
+    
     C = 0
     Cp = {}
     UNMARKED = 777777
-
+    
+    
     df['cluster'] = UNMARKED
     df['visited'] = 'Not visited'
-    MaxId = -1
-
-    for index, row in df.iterrows():
+    MaxId = -1    
+        
+    for index, P in df.iterrows():   
+        if(index == 300):
+            break    
         if index > MaxId:           
-            print(df.iloc[index]['visited'])
-            df.set_value(index, 'visited', 'visited')            
+            
+            df.loc[index, "visited"] = "visited"          
             #search for continuous density-based neighbours N
-            N = getNeighbors(row, CEps, Eps, df, index)
+            N = getNeighbors(P, CEps, Eps, df, index)
             MaxId = index            
             #create new cluster
             if len(N) > MinPts: 
                 C = C + 1                
             #expand the cluster
-            Ctemp, MaxId = expandCluster(row, N, CEps, Eps, MinPts, MaxId, df, index)            
+            Ctemp, MaxId = expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, index)            
             if C in Cp:
                 Cp[C] = Cp[C] + Ctemp                             
             else:
@@ -46,6 +50,7 @@ def T_DBSCAN(df, CEps,Eps, MinPts):
        
     return df
 
+
 # Retrieve neighbors
 def getNeighbors(P, CEps, Eps, df, p_index):
     
@@ -54,14 +59,16 @@ def getNeighbors(P, CEps, Eps, df, p_index):
     
     for index, point in df.iterrows():
         if index > p_index:
-            distance = calculateDistance(center_point['x'], center_point['y'], point['x'], point['y'])
+            distance = get_distance(center_point['x'], center_point['y'], point['x'], point['y'])
             if distance < Eps:
                 neighborhood.append(index)
             elif distance > CEps:
                  break
              
     return neighborhood
-
+        
+ 
+    
 #cluster expanding
 def expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, p_index):
     
@@ -72,7 +79,7 @@ def expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, p_index):
     
     for index in N:
         point = df.loc[index]
-        df.set_value(index, 'visited', 'visited')
+        df.loc[index]['visited'] = "visited"
         if index > MaxId:
             MaxId = index     
         N2 = getNeighbors(point, CEps, Eps, df, index) #find neighbors of neighbors of core point P   
@@ -82,7 +89,7 @@ def expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, p_index):
             Cp.append(index)
             
     return Cp, MaxId
-
+            
 #merge clusters
 def mergeClusters(Cp):
      
@@ -101,17 +108,18 @@ def mergeClusters(Cp):
                  Buffer[list(Buffer.keys())[-1]] += Cp[idx]
                              
      return Buffer
-
+                 
+             
 #update dataframe             
 def updateClusters(df, Cp):
     
     for idx, val in Cp.items():
         for index in val:
-            df.set_value(index, 'cluster', idx)
+            df.loc[index, "cluster"] = idx
             
     return df
-
-# Calculate distance between 2 points
-def calculateDistance(x1, y1, x2, y2):
-    distance = math.sqrt( ((x2-x1)**2)+((y2-y1)**2) )
+     
+def get_distance(x1, x2, y1, y2):
+    distance = math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
+    print(distance)
     return distance
