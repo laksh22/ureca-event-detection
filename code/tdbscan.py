@@ -23,18 +23,18 @@ def T_DBSCAN(df, CEps,Eps, MinPts):
     df['visited'] = 'Not visited'
     MaxId = -1
 
-    for index, P in df.iterrows():
+    for index, row in df.iterrows():
         if index > MaxId:           
-            
+            print(df.iloc[index]['visited'])
             df.set_value(index, 'visited', 'visited')            
             #search for continuous density-based neighbours N
-            N = getNeighbors(P, CEps, Eps, df, index)
+            N = getNeighbors(row, CEps, Eps, df, index)
             MaxId = index            
             #create new cluster
             if len(N) > MinPts: 
                 C = C + 1                
             #expand the cluster
-            Ctemp, MaxId = expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, index)            
+            Ctemp, MaxId = expandCluster(row, N, CEps, Eps, MinPts, MaxId, df, index)            
             if C in Cp:
                 Cp[C] = Cp[C] + Ctemp                             
             else:
@@ -54,7 +54,7 @@ def getNeighbors(P, CEps, Eps, df, p_index):
     
     for index, point in df.iterrows():
         if index > p_index:
-            distance = calculateDistance((center_point['x'], center_point['y']), (point['x'], point['y']))
+            distance = calculateDistance(center_point['x'], center_point['y'], point['x'], point['y'])
             if distance < Eps:
                 neighborhood.append(index)
             elif distance > CEps:
@@ -72,7 +72,7 @@ def expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, p_index):
     
     for index in N:
         point = df.loc[index]
-        df.loc[index]['visited'] = 1
+        df.set_value(index, 'visited', 'visited')
         if index > MaxId:
             MaxId = index     
         N2 = getNeighbors(point, CEps, Eps, df, index) #find neighbors of neighbors of core point P   
@@ -114,3 +114,4 @@ def updateClusters(df, Cp):
 # Calculate distance between 2 points
 def calculateDistance(x1, y1, x2, y2):
     distance = math.sqrt( ((x2-x1)**2)+((y2-y1)**2) )
+    return distance
