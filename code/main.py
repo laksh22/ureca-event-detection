@@ -15,9 +15,10 @@ coordinate_frame = np.zeros((img.shape[:2][0],img.shape[:2][1],3), np.uint8)
 curr_frame = 1
 
 # Get trajectory clusters
-clustered_df = T_DBSCAN(df, 300, 40, 2)
+clustered_df = T_DBSCAN(df, 80, 100, 1)
 #clustered_df.to_csv("clusters.csv")
 print("CLUSTER: ", clustered_df)
+clustered_df.to_csv("CLUSTERS.csv")
 colors = get_color_dict(clustered_df)
 
 for index, row in df.iterrows():
@@ -29,7 +30,8 @@ for index, row in df.iterrows():
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same, colors[clustered_df.loc[index, "cluster"]])
 
-    cv2.imshow("Video", cv2.bitwise_or(frame, coordinate_frame))
+    #cv2.imshow("Video", cv2.bitwise_or(frame, coordinate_frame))
+    cv2.imshow("Video", coordinate_frame)
 
     #print(index, row["index"], row['x'], row['y'])
 

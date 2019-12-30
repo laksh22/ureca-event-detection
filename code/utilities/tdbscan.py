@@ -16,28 +16,29 @@ OUTPUT:
 
 def T_DBSCAN(df, CEps,Eps, MinPts):
     
-    C = 0
-    Cp = {}
+    C = 0 #ID of cluster currently being searched
+    Cp = {} #Points in cluster with ID same as C
     UNMARKED = 777777
     
     
     df['cluster'] = UNMARKED
     df['visited'] = 'Not visited'
-    MaxId = -1    
+    MaxId = -1 #Maximum ID of the visited point
         
-    for index, P in df.iterrows():   
-        if(index == 300):
+    for index, P in df.iterrows(): #Go through each data point  
+        if(index == 100):
+            print("C IS:", C)
             break    
-        if index > MaxId:           
+        if index > MaxId: #Only look at data after current observation           
             
-            df.loc[index, "visited"] = "visited"          
-            #search for continuous density-based neighbours N
+            df.loc[index, "visited"] = "visited" #Mark current datapoint as visited          
+            #Search for continuous density-based neighbours N
             N = getNeighbors(P, CEps, Eps, df, index)
-            MaxId = index            
-            #create new cluster
+            MaxId = index #Set new max ID as current          
+            #Make new cluster if number of neighbours > MinPts
             if len(N) > MinPts: 
                 C = C + 1                
-            #expand the cluster
+            #Expand the cluster
             Ctemp, MaxId = expandCluster(P, N, CEps, Eps, MinPts, MaxId, df, index)            
             if C in Cp:
                 Cp[C] = Cp[C] + Ctemp                             
@@ -56,11 +57,14 @@ def getNeighbors(P, CEps, Eps, df, p_index):
     
     neighborhood = []
     center_point = P
+
+    curr_frame = df.iloc[p_index]["frame"]
     
     for index, point in df.iterrows():
-        if index > p_index:
+        if df.iloc[index]["frame"] == curr_frame:
             distance = get_distance(center_point['x'], center_point['y'], point['x'], point['y'])
             if distance < Eps:
+                print("FOUND NEIGHBOUR")
                 neighborhood.append(index)
             elif distance > CEps:
                  break
