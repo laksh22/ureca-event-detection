@@ -14,7 +14,7 @@ def to_df(path):
 # Convert default top, left, height, width to locations of centroids
 def to_coordinates(path):
     df = to_df(path)
-    df['x'] = df.apply(lambda row: row.left + row.width/2, axis=1)
-    df['y'] = df.apply(lambda row: row.top + row.height/2, axis=1)
+    df['x'] = df.apply(lambda row: round(row.left + row.width/2, 2), axis=1)
+    df['y'] = df.apply(lambda row: round(row.top + row.height/2, 2), axis=1)
     df = df.drop(["top", "left", "width", "height"], axis=1)
     return df
