@@ -12,6 +12,8 @@ _, img = capture.read()
 
 coordinate_frame = np.zeros((img.shape[:2][0],img.shape[:2][1],3), np.uint8)
 
+to_txt(df, "tracks.txt")
+
 curr_frame = 1
 
 for index, row in df.iterrows():

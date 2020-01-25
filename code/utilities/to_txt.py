@@ -12,11 +12,11 @@ def to_txt(df, name):
         locations["smooth_x"] = locations["x"].rolling(win_len, win_type="hamming").mean()
         locations["smooth_y"] = locations["y"].rolling(win_len, win_type="hamming").mean()
         locations = locations.iloc[win_len:]
-        '''
+        
         plt.plot(locations["frame"], locations["smooth_x"])
         plt.plot(locations["frame"], locations["x"], color="black")
         plt.show()
-        '''
+        
 
         idx = 0
         for index, row in locations.iterrows():

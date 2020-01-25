@@ -3,4 +3,7 @@ data
 Report.md
 /external_code
 /__pycache__
-dog.jpg
+*.jpg
+*.avi
+*.mp4
+*.txt
