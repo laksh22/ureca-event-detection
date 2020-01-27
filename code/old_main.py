@@ -4,6 +4,7 @@ import numpy as np
 from utilities.background_extraction import extract_background
 from utilities.foreground_extraction import get_foreground
 from utilities.road_mask_creation import *
+from utilities.draw_polygon import get_road_polygons
 
 #video = '../data/aic19-track3-train-data/49.mp4'
 video = '../data/trimmed_49.avi'
@@ -15,28 +16,35 @@ size = (width, height)
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 output = cv2.VideoWriter("stalled_car.avi", fourcc, 20.0, size)
 
-subtractor = cv2.createBackgroundSubtractorMOG2()
-
 _, frame = capture.read()
 average = np.float32(frame)
 
-# First we create the road mask
-mask = get_road_mask(video, 1300)
-mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-
+# For gettin the user-drawn road masks
+background = None
+frame_num = 0
 while True:
     _, frame = capture.read()
 
     # Background Extraction
     background, average = extract_background(frame, average)
+
+    frame_num += 1
+
+    if(frame_num == 200):
+        cv2.imwrite('background.png', background)
+        break
+
+roads = get_road_polygons(background)[:-1]
+print(roads)
+
+# For doing the rest
+capture = cv2.VideoCapture(video)
+while True:
+    _, frame = capture.read()
+
+    background, average = extract_background(frame, average)
     cv2.imshow("Background", background)
     output.write(background)
-    # Foreground Extraction
-    foreground = get_foreground(frame, subtractor)
-    cv2.imshow("Foreground", foreground)
-    # Road Mask
-    driveable_area = cv2.bitwise_and(mask, frame)
-    cv2.imshow("Driveable Area", mask)
 
     key = cv2.waitKey(30) & 0xff
     if key == 27:

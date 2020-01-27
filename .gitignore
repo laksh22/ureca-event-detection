@@ -2,8 +2,9 @@ documents
 data
 Report.md
 /external_code
-/__pycache__
+__pycache__
 *.jpg
+*.png
 *.avi
 *.mp4
 *.txt
