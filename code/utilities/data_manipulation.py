@@ -1,6 +1,21 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.path as mPath
+
+# To allocate object to a polygon
+def allocate_polygon(polygons, points):
+    polygons_list = [[]]
+    for index, row in points.iterrows():
+        for i in range(len(polygons)):
+            path = mPath.Path(polygons[i])
+            if(path.contains_point([row["x"], row["y"]])):
+                polygons_list[len(polygons_list)-1].append(i)
+        polygons_list.append([])
+    polygons_list = polygons_list[:-1]
+    points["road_id"] = polygons_list
+    print(points)
+            
 
 # Convert text file of detected objects to a pandas dataframe
 def to_df(path):
@@ -19,6 +34,7 @@ def to_coordinates(path):
     df['y'] = df.apply(lambda row: round(row.top + row.height/2, 2), axis=1)
     df = df.drop(["top", "left", "width", "height"], axis=1)
     return df
+
 
 def to_txt(df, name):
 

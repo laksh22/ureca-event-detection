@@ -41,8 +41,6 @@ def get_road_polygons(background):
                     curr = -1
                     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-            print(len(shapes))
-
             cv2.imshow('image', img)
 
     img = background

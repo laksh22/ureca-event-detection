@@ -4,7 +4,7 @@ import pandas as pd
 
 from utilities.background_extraction import extract_background
 from utilities.draw import draw, get_color_dict, get_road_polygons
-from utilities.data_manipulation import to_df, to_coordinates, to_txt
+from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon
 
 # Getting the data
 video = '../data/testing/video1.mp4'
@@ -46,6 +46,9 @@ for index, row in df.iterrows():
 
     #Make dataframe of objects in current frame
     same = df.loc[df['frame'] == curr_frame]
+
+    # Allocate a road ID to each object
+    allocate_polygon(roads, same)
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)
