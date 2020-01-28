@@ -1,21 +1,46 @@
 import cv2
 import numpy as np
+import pandas as pd
 
-from utilities.to_df import to_df, to_coordinates
-from utilities.draw import draw, get_color_dict
-from utilities.to_txt import to_txt
+from utilities.background_extraction import extract_background
+from utilities.draw import draw, get_color_dict, get_road_polygons
+from utilities.data_manipulation import to_df, to_coordinates, to_txt
 
-df = to_coordinates("../data/testing/detections.txt")
-capture = cv2.VideoCapture('../data/testing/video1.mp4')
+# Getting the data
+video = '../data/testing/video1.mp4'
+tracks = '../data/testing/detections.txt'
 
-_, img = capture.read()
+# Start the capture for generating background plate
+capture = cv2.VideoCapture(video)
+_, frame = capture.read()
+average = np.float32(frame)
+coordinate_frame = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8) # For drawing the objects
 
-coordinate_frame = np.zeros((img.shape[:2][0],img.shape[:2][1],3), np.uint8)
+# For gettin the user-drawn road masks
+background = None
+frame_num = 0
+while True:
+    _, frame = capture.read()
 
-to_txt(df, "tracks.txt")
+    # Background Extraction
+    background, average = extract_background(frame, average)
+
+    frame_num += 1
+
+    if(frame_num == 200):
+        break
+
+# Ask user to draw the road masks
+roads = get_road_polygons(background)[:-1]
+print(roads)
+
+# For doing the rest
+capture = cv2.VideoCapture(video)
+
+# Convert the tracks output into a dataframe
+df = to_coordinates(tracks)
 
 curr_frame = 1
-
 for index, row in df.iterrows():
     _, frame = capture.read()
 
