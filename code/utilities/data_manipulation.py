@@ -2,19 +2,36 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.path as mPath
+from collections import defaultdict
+import math
+
+# To return speed and angle of points in an allocation dictionary
+def find_road_specs(oldAllocations, newAllocations, roadDetails):
+    for key in newAllocations:
+        if key in oldAllocations.keys():
+            road = newAllocations[key]
+            for objKey in road.keys():
+                if objKey in oldAllocations[key].keys():
+                    oldPoint = oldAllocations[key][objKey]
+                    newPoint = newAllocations[key][objKey]
+                    roadDetails[key]["speed"].append(get_distance(oldPoint, newPoint))
+
+    return roadDetails
 
 # To allocate object to a polygon
 def allocate_polygon(polygons, points):
-    polygons_list = [[]]
+    #polygons_list = [[]]
+    allocations=defaultdict(dict)
     for index, row in points.iterrows():
         for i in range(len(polygons)):
             path = mPath.Path(polygons[i])
             if(path.contains_point([row["x"], row["y"]])):
-                polygons_list[len(polygons_list)-1].append(i)
-        polygons_list.append([])
-    polygons_list = polygons_list[:-1]
-    points["road_id"] = polygons_list
-    print(points)
+                allocations[i][row["object_id"]] = [row["x"], row["y"]]
+                #polygons_list[len(polygons_list)-1].append(i)
+        #polygons_list.append([])
+    #polygons_list = polygons_list[:-1]
+    #points["road_id"] = polygons_list
+    return allocations
             
 
 # Convert text file of detected objects to a pandas dataframe
@@ -62,3 +79,6 @@ def to_txt(df, name):
         f.write("\r\n")
 
     f.close()
+
+def get_distance(p1, p2):
+        return math.sqrt( ((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2) )
