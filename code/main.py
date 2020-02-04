@@ -40,8 +40,7 @@ for i in range(len(roads)):
     x = [p[0] for p in roads[i]]
     y = [p[1] for p in roads[i]]
     centroid = (sum(x) / len(roads[i]), sum(y) / len(roads[i]))
-    road_details[i] = {"speed": [], "angle": [], "centroid": centroid}
-    coordinate_frame = draw_arrow(coordinate_frame, centroid)
+    road_details[i] = {"speed": [], "angle": [], "centroid": centroid, "median_speed": 0, "median_angle": 0}
 
 # For doing the rest
 capture = cv2.VideoCapture(video)
@@ -58,6 +57,9 @@ for index, row in df.iterrows():
     #Make dataframe of objects in current frame
     same = df.loc[df['frame'] == curr_frame]
 
+    # Mask for drawing the road arrows
+    road_details_frame = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
+
     if (allocations == None):
         # Allocate a road ID to each object
         allocations = allocate_polygon(roads, same)
@@ -67,14 +69,20 @@ for index, row in df.iterrows():
 
         # Edit road speed and angle
         road_details = find_road_specs(prev_allocations, allocations, road_details)
-        print(road_details)
-        print("===")
+        
+    for key in road_details.keys():
+        road_details_frame = draw_arrow(road_details_frame, 
+                                        road_details[key]["centroid"], 
+                                        length=road_details[key]["median_speed"],
+                                        angle=road_details[key]["median_angle"])
+        print(road_details[key]["median_speed"], road_details[key]["median_angle"])
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)
 
     #Show the points on top of the video
-    cv2.imshow("Video", cv2.bitwise_or(frame, coordinate_frame))
+    masks = cv2.bitwise_or(coordinate_frame, road_details_frame)
+    cv2.imshow("Video", cv2.bitwise_or(frame, masks))
 
     #print(index, row["index"], row['x'], row['y'])
 

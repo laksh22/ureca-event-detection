@@ -6,6 +6,16 @@ from collections import defaultdict
 import math
 
 # To return speed and angle of points in an allocation dictionary
+'''
+Structure:
+roadDetails: {
+    road_id : {
+        speed: [s1, s2, ..., sn],
+        angle: [a1, a2, ..., an],
+        centroid: (x, y)
+    }
+}
+'''
 def find_road_specs(oldAllocations, newAllocations, roadDetails):
     for key in newAllocations:
         if key in oldAllocations.keys():
@@ -15,10 +25,22 @@ def find_road_specs(oldAllocations, newAllocations, roadDetails):
                     oldPoint = oldAllocations[key][objKey]
                     newPoint = newAllocations[key][objKey]
                     roadDetails[key]["speed"].append(get_distance(oldPoint, newPoint))
+                    roadDetails[key]["angle"].append(get_angle(oldPoint, newPoint))
+    for key in roadDetails.keys():
+        roadDetails[key]["median_speed"] = get_median(roadDetails[key]["speed"])
+        roadDetails[key]["median_angle"] = get_median(roadDetails[key]["angle"])
 
     return roadDetails
 
 # To allocate object to a polygon
+'''
+Structure:
+allocations: {
+    road_id : {
+        object_id: [x, y]
+    }
+}
+'''
 def allocate_polygon(polygons, points):
     #polygons_list = [[]]
     allocations=defaultdict(dict)
@@ -82,3 +104,14 @@ def to_txt(df, name):
 
 def get_distance(p1, p2):
         return math.sqrt( ((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2) )
+
+def get_angle(p1, p2):
+    return math.atan2(p2[1]-p1[1], p2[0]-p1[0])
+
+def get_median(xs):
+        mid = len(xs) // 2  # Take the mid of the list
+        if len(xs) % 2 == 1: # check if the len of list is odd
+            return sorted(xs)[mid] #if true then mid will be median after sorting
+        else:
+            #return 0.5 * sum(sorted(xs)[mid - 1:mid + 1])
+            return 0.5 * np.sum(sorted(xs)[mid - 1:mid + 1]) #if false take the avg of mid

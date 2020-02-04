@@ -67,8 +67,10 @@ def draw(frame, same, color=(0, 0, 255)):
         cv2.circle(frame, (int(row.x), int(row.y)), 2, color, 2)
     return frame
 
-def draw_arrow(frame, point, color=(0, 255, 0)):
-    cv2.arrowedLine(frame, (int(point[0]), int(point[1])), (int(point[0])+20, int(point[1])+20), color, 2)
+def draw_arrow(frame, point, length=20, angle=0, color=(0, 255, 0)):
+    end_point_x = int(point[0]+10*length*math.cos(angle))
+    end_point_y = int(point[1]+10*length*math.sin(angle))
+    cv2.arrowedLine(frame, (int(point[0]), int(point[1])), (end_point_x, end_point_y), color, 2)
     return frame
 
 def get_color_dict(df):
