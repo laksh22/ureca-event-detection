@@ -59,7 +59,7 @@ def get_road_polygons(background):
 
     cv2.destroyAllWindows()
 
-    return shapes
+    return shapes[:-1]
 
 
 def draw(frame, same, color=(0, 0, 255)):
@@ -67,15 +67,17 @@ def draw(frame, same, color=(0, 0, 255)):
         cv2.circle(frame, (int(row.x), int(row.y)), 2, color, 2)
     return frame
 
-def draw_arrow(frame, point, length=20, angle=0, color=(0, 255, 0)):
+def draw_arrow(frame, point, length=20, angle=0, color=(255, 255, 255)):
     end_point_x = int(point[0]+10*length*math.cos(angle))
     end_point_y = int(point[1]+10*length*math.sin(angle))
-    cv2.arrowedLine(frame, (int(point[0]), int(point[1])), (end_point_x, end_point_y), color, 2)
+    cv2.arrowedLine(frame, (point[0], point[1]), (end_point_x, end_point_y), color, 5)
     return frame
 
-def get_color_dict(df):
-    clusters = df.cluster.unique()
-    d = dict((i, (rand_rgb(), rand_rgb(), rand_rgb())) for i in clusters)
+def get_color_dict(roads):
+    d = {}
+    for i in range(len(roads)):
+        d[i] = (rand_rgb(), rand_rgb(), rand_rgb())
+
     return d
 
 def rand_rgb():

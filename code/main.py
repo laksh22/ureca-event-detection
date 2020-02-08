@@ -6,6 +6,8 @@ from utilities.background_extraction import extract_background
 from utilities.draw import draw, get_color_dict, get_road_polygons, draw_arrow
 from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon, find_road_specs
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+
 # Getting the data
 video = '../data/testing/video1.mp4'
 tracks = '../data/testing/detections.txt'
@@ -31,16 +33,23 @@ while True:
         break
 
 # Ask user to draw the road masks
-roads = get_road_polygons(background)[:-1]
-print(roads)
+roads = get_road_polygons(background)
 
 # Make an empty dictionary to store speed and angle of roads
 road_details = {}
 for i in range(len(roads)):
     x = [p[0] for p in roads[i]]
     y = [p[1] for p in roads[i]]
-    centroid = (sum(x) / len(roads[i]), sum(y) / len(roads[i]))
+    centroid = (int(sum(x) / len(roads[i])), int(sum(y) / len(roads[i])))
     road_details[i] = {"speed": [], "angle": [], "centroid": centroid, "median_speed": 0, "median_angle": 0}
+
+# Make a filter for drawing road boundaries
+road_boundaries = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
+road_colours = get_color_dict(roads)
+
+for i in range(len(roads)):
+    cv2.putText(road_boundaries, str(i), roads[i][0], font, 1, (255, 255, 0), 2)
+    cv2.fillConvexPoly(road_boundaries, np.asarray(roads[i]), road_colours[i])
 
 # For doing the rest
 capture = cv2.VideoCapture(video)
@@ -75,14 +84,18 @@ for index, row in df.iterrows():
                                         road_details[key]["centroid"], 
                                         length=road_details[key]["median_speed"],
                                         angle=road_details[key]["median_angle"])
+        cv2.putText(road_details_frame, str(key), road_details[key]["centroid"], font, 1, (255, 255, 0), 2)
         print(road_details[key]["median_speed"], road_details[key]["median_angle"])
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)
 
     #Show the points on top of the video
-    masks = cv2.bitwise_or(coordinate_frame, road_details_frame)
-    cv2.imshow("Video", cv2.bitwise_or(frame, masks))
+    mask = road_boundaries
+    mask = cv2.bitwise_or(mask, road_details_frame)
+    mask = cv2.bitwise_or(mask, coordinate_frame)
+    cv2.addWeighted(mask, 0.5, frame, 1 - 0.5, 0, frame)
+    cv2.imshow("Video", frame)
 
     #print(index, row["index"], row['x'], row['y'])
 
