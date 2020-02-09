@@ -1,10 +1,13 @@
+# TODO: If the object gives an error in 1 window but not in another, then remove from event list.
+# Object can overspeed if its far away and underspeed if its close to camera
+
 import cv2
 import numpy as np
 import pandas as pd
 
 from utilities.background_extraction import extract_background
 from utilities.draw import draw, get_color_dict, get_road_polygons, draw_arrow
-from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon, find_road_specs
+from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon, find_road_specs, get_max
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -86,6 +89,8 @@ for index, row in df.iterrows():
                                         angle=road_details[key]["median_angle"])
         cv2.putText(road_details_frame, str(key), road_details[key]["centroid"], font, 1, (255, 255, 0), 2)
         print(road_details[key]["median_speed"], road_details[key]["median_angle"])
+        if(curr_frame == 100):
+            get_max(road_details[key]["speed"])
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)

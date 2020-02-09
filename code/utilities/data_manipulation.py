@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.path as mPath
 from collections import defaultdict
 import math
+from time import sleep
 
 # To return speed and angle of points in an allocation dictionary
 '''
@@ -115,3 +116,24 @@ def get_median(xs):
         else:
             #return 0.5 * sum(sorted(xs)[mid - 1:mid + 1])
             return 0.5 * np.sum(sorted(xs)[mid - 1:mid + 1]) #if false take the avg of mid
+
+def get_max(data, m=2):
+    data = sorted(np.array(data))
+
+    no_outliers = remove_outliers(data)
+    max_val = np.percentile(no_outliers, 90) 
+
+    print(max_val)
+    return max_val
+
+def remove_outliers(x, outlierConstant=2):
+    a = np.array(x)
+    upper_quartile = np.percentile(a, 75)
+    lower_quartile = np.percentile(a, 25)
+    IQR = (upper_quartile - lower_quartile) * outlierConstant
+    quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
+    resultList = []
+    for y in a.tolist():
+        if y >= quartileSet[0] and y <= quartileSet[1]:
+            resultList.append(y)
+    return resultList
