@@ -1,5 +1,11 @@
+# TODO: Write code to identify wrong side driving
+# TODO: Write code to identify over-speeding
+# TODO: Live object detection inside main for loop
+# TODO: Integrate code for stalled car detection
+# TODO: Write code to identify traffic jam (if many cars detected in background plate)
 # TODO: If the object gives an error in 1 window but not in another, then remove from event list.
-# Object can overspeed if its far away and underspeed if its close to camera
+# TODO: Migrate to automated path detection
+# PROBLEM: Object can overspeed if its far away and underspeed if its close to camera
 
 import cv2
 import numpy as np
@@ -38,13 +44,15 @@ while True:
 # Ask user to draw the road masks
 roads = get_road_polygons(background)
 
-# Make an empty dictionary to store speed and angle of roads
+# Make an empty dictionary to store speed and angle of roads, another to store background car density
 road_details = {}
+background_details = {}
 for i in range(len(roads)):
     x = [p[0] for p in roads[i]]
     y = [p[1] for p in roads[i]]
     centroid = (int(sum(x) / len(roads[i])), int(sum(y) / len(roads[i])))
     road_details[i] = {"speed": [], "angle": [], "centroid": centroid, "median_speed": 0, "median_angle": 0}
+    background_details[i] = {"density": {"count": 0, "time": 0}}
 
 # Make a filter for drawing road boundaries
 road_boundaries = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
@@ -63,6 +71,9 @@ df = to_coordinates(tracks)
 curr_frame = 1
 allocations = None
 
+# For stalled cars/traffic jam
+average = np.float32(frame)
+background = None
 for index, row in df.iterrows():
     _, frame = capture.read()
 
@@ -88,12 +99,17 @@ for index, row in df.iterrows():
                                         length=road_details[key]["median_speed"],
                                         angle=road_details[key]["median_angle"])
         cv2.putText(road_details_frame, str(key), road_details[key]["centroid"], font, 1, (255, 255, 0), 2)
-        print(road_details[key]["median_speed"], road_details[key]["median_angle"])
+        #print(road_details[key]["median_speed"], road_details[key]["median_angle"])
         if(curr_frame == 100):
-            get_max(road_details[key]["speed"])
+            None
+            #get_max(road_details[key]["speed"])
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)
+
+    # Generate the background frame to see stalled cars
+    background, average = extract_background(frame, average)
+    cv2.imshow("Bg", background)
 
     #Show the points on top of the video
     mask = road_boundaries

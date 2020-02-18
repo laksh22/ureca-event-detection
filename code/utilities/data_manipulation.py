@@ -33,6 +33,20 @@ def find_road_specs(oldAllocations, newAllocations, roadDetails):
 
     return roadDetails
 
+def find_background_specs(allocations, background_details):
+    for key in allocations:
+        road = allocations[key]
+        objectCount = 0
+        for objKey in road.keys():
+            objectCount += 1
+        # If the new object count is greater than the maximum, update the count
+        if(background_details[key]["density"]["count"] < objectCount):
+            background_details[key]["density"]["count"] = objectCount
+            background_details[key]["density"]["time"] = 0
+        # If it is the same, update the time
+        if(background_details[key]["density"]["count"] == objectCount):
+            background_details[key]["density"]["time"] = background_details[key]["density"]["time"] + 1
+
 # To allocate object to a polygon
 '''
 Structure:
