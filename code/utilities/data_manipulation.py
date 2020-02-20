@@ -6,6 +6,8 @@ from collections import defaultdict
 import math
 from time import sleep
 
+from utilities.event_detection import detect_event
+
 # To return speed and angle of points in an allocation dictionary
 '''
 Structure:
@@ -25,11 +27,15 @@ def find_road_specs(oldAllocations, newAllocations, roadDetails):
                 if objKey in oldAllocations[key].keys():
                     oldPoint = oldAllocations[key][objKey]
                     newPoint = newAllocations[key][objKey]
-                    roadDetails[key]["speed"].append(get_distance(oldPoint, newPoint))
-                    roadDetails[key]["angle"].append(get_angle(oldPoint, newPoint))
+                    distance = get_distance(oldPoint, newPoint)
+                    angle = get_angle(oldPoint, newPoint)
+                    roadDetails[key]["speed"].append(distance)
+                    roadDetails[key]["angle"].append(angle)
     for key in roadDetails.keys():
         roadDetails[key]["median_speed"] = get_median(roadDetails[key]["speed"])
         roadDetails[key]["median_angle"] = get_median(roadDetails[key]["angle"])
+        roadDetails[key]["speed_deviation"] = get_mad(roadDetails[key]["speed"])
+        roadDetails[key]["angle_deviation"] = get_mad(roadDetails[key]["angle"])
 
     return roadDetails
 
@@ -46,6 +52,25 @@ def find_background_specs(allocations, background_details):
         # If it is the same, update the time
         if(background_details[key]["density"]["count"] == objectCount):
             background_details[key]["density"]["time"] = background_details[key]["density"]["time"] + 1
+
+    return background_details
+
+def find_events(oldAllocations, newAllocations, roadDetails, eventDetails):
+    for key in newAllocations:
+        if key in oldAllocations.keys():
+            road = newAllocations[key]
+            for objKey in road.keys():
+                if objKey in oldAllocations[key].keys():
+                    oldPoint = oldAllocations[key][objKey]
+                    newPoint = newAllocations[key][objKey]
+                    distance = get_distance(oldPoint, newPoint)
+                    angle = get_angle(oldPoint, newPoint)
+                    if(detect_event(angle, roadDetails[key]["median_angle"], get_mad(roadDetails[key]["angle"]))):
+                        print(key, "WRONG SIDE")
+                    if(detect_event(distance, roadDetails[key]["median_speed"], get_mad(roadDetails[key]["speed"]))):
+                        print(key, "WRONG SPEED")
+
+
 
 # To allocate object to a polygon
 '''
@@ -123,6 +148,14 @@ def get_distance(p1, p2):
 def get_angle(p1, p2):
     return math.atan2(p2[1]-p1[1], p2[0]-p1[0])
 
+# Using robust Z-Score
+def get_mad(arr):
+    median = get_median(arr)
+    arr = np.asarray(arr)
+    arr = np.abs(arr - median)
+    mad = get_median(arr)
+    return mad
+
 def get_median(xs):
         mid = len(xs) // 2  # Take the mid of the list
         if len(xs) % 2 == 1: # check if the len of list is odd
@@ -137,7 +170,6 @@ def get_max(data, m=2):
     no_outliers = remove_outliers(data)
     max_val = np.percentile(no_outliers, 90) 
 
-    print(max_val)
     return max_val
 
 def remove_outliers(x, outlierConstant=2):

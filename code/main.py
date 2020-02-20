@@ -1,5 +1,3 @@
-# TODO: Write code to identify wrong side driving
-# TODO: Write code to identify over-speeding
 # TODO: Live object detection inside main for loop
 # TODO: Integrate code for stalled car detection
 # TODO: Write code to identify traffic jam (if many cars detected in background plate)
@@ -13,7 +11,7 @@ import pandas as pd
 
 from utilities.background_extraction import extract_background
 from utilities.draw import draw, get_color_dict, get_road_polygons, draw_arrow
-from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon, find_road_specs, get_max
+from utilities.data_manipulation import to_df, to_coordinates, to_txt, allocate_polygon, find_road_specs, get_max, find_events
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -47,12 +45,21 @@ roads = get_road_polygons(background)
 # Make an empty dictionary to store speed and angle of roads, another to store background car density
 road_details = {}
 background_details = {}
+event_details = {}
 for i in range(len(roads)):
     x = [p[0] for p in roads[i]]
     y = [p[1] for p in roads[i]]
     centroid = (int(sum(x) / len(roads[i])), int(sum(y) / len(roads[i])))
-    road_details[i] = {"speed": [], "angle": [], "centroid": centroid, "median_speed": 0, "median_angle": 0}
-    background_details[i] = {"density": {"count": 0, "time": 0}}
+    road_details[i] = {"speed": [], 
+                        "angle": [], 
+                        "centroid": centroid, 
+                        "median_speed": 0, 
+                        "speed_deviation": 0,
+                        "median_angle": 0, 
+                        "angle_deviation": 0}
+    background_details[i] = {"density": 
+                                {"count": 0, 
+                                "time": 0}}
 
 # Make a filter for drawing road boundaries
 road_boundaries = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
@@ -92,6 +99,8 @@ for index, row in df.iterrows():
 
         # Edit road speed and angle
         road_details = find_road_specs(prev_allocations, allocations, road_details)
+
+        find_events(prev_allocations, allocations, road_details, event_details)
         
     for key in road_details.keys():
         road_details_frame = draw_arrow(road_details_frame, 
@@ -103,6 +112,8 @@ for index, row in df.iterrows():
         if(curr_frame == 100):
             None
             #get_max(road_details[key]["speed"])
+
+    
 
     #Draw points for current frame
     coordinate_frame = draw(coordinate_frame, same)
