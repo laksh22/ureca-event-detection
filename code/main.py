@@ -1,13 +1,15 @@
-# TODO: Live object detection inside main for loop
 # TODO: Integrate code for stalled car detection
 # TODO: Write code to identify traffic jam (if many cars detected in background plate)
 # TODO: If the object gives an error in 1 window but not in another, then remove from event list.
 # TODO: Migrate to automated path detection
+# TODO: Show event graphically
+# TODO: Differentiate between training and testing
 # PROBLEM: Object can overspeed if its far away and underspeed if its close to camera
 
 import cv2
 import numpy as np
 import pandas as pd
+import subprocess
 
 from utilities.background_extraction import extract_background
 from utilities.draw import draw, get_color_dict, get_road_polygons, draw_arrow
@@ -23,7 +25,8 @@ tracks = '../data/testing/detections.txt'
 capture = cv2.VideoCapture(video)
 _, frame = capture.read()
 average = np.float32(frame)
-coordinate_frame = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8) # For drawing the objects
+coordinate_frame = np.zeros(
+    (frame.shape[:2][0], frame.shape[:2][1], 3), np.uint8)  # For drawing the objects
 
 # For gettin the user-drawn road masks
 background = None
@@ -39,6 +42,10 @@ while True:
     if(frame_num == 200):
         break
 
+# Codec for saving background image
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
+
 # Ask user to draw the road masks
 roads = get_road_polygons(background)
 
@@ -50,23 +57,25 @@ for i in range(len(roads)):
     x = [p[0] for p in roads[i]]
     y = [p[1] for p in roads[i]]
     centroid = (int(sum(x) / len(roads[i])), int(sum(y) / len(roads[i])))
-    road_details[i] = {"speed": [], 
-                        "angle": [], 
-                        "centroid": centroid, 
-                        "median_speed": 0, 
-                        "speed_deviation": 0,
-                        "median_angle": 0, 
-                        "angle_deviation": 0}
-    background_details[i] = {"density": 
-                                {"count": 0, 
-                                "time": 0}}
+    road_details[i] = {"speed": [],
+                       "angle": [],
+                       "centroid": centroid,
+                       "median_speed": 0,
+                       "speed_deviation": 0,
+                       "median_angle": 0,
+                       "angle_deviation": 0}
+    background_details[i] = {"density":
+                             {"count": 0,
+                                 "time": 0}}
 
 # Make a filter for drawing road boundaries
-road_boundaries = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
+road_boundaries = np.zeros(
+    (frame.shape[:2][0], frame.shape[:2][1], 3), np.uint8)
 road_colours = get_color_dict(roads)
 
 for i in range(len(roads)):
-    cv2.putText(road_boundaries, str(i), roads[i][0], font, 1, (255, 255, 0), 2)
+    cv2.putText(road_boundaries, str(
+        i), roads[i][0], font, 1, (255, 255, 0), 2)
     cv2.fillConvexPoly(road_boundaries, np.asarray(roads[i]), road_colours[i])
 
 # For doing the rest
@@ -84,11 +93,12 @@ background = None
 for index, row in df.iterrows():
     _, frame = capture.read()
 
-    #Make dataframe of objects in current frame
+    # Make dataframe of objects in current frame
     same = df.loc[df['frame'] == curr_frame]
 
     # Mask for drawing the road arrows
-    road_details_frame = np.zeros((frame.shape[:2][0],frame.shape[:2][1],3), np.uint8)
+    road_details_frame = np.zeros(
+        (frame.shape[:2][0], frame.shape[:2][1], 3), np.uint8)
 
     if (allocations == None):
         # Allocate a road ID to each object
@@ -98,31 +108,30 @@ for index, row in df.iterrows():
         allocations = allocate_polygon(roads, same)
 
         # Edit road speed and angle
-        road_details = find_road_specs(prev_allocations, allocations, road_details)
+        road_details = find_road_specs(
+            prev_allocations, allocations, road_details)
 
         find_events(prev_allocations, allocations, road_details, event_details)
-        
+
     for key in road_details.keys():
-        road_details_frame = draw_arrow(road_details_frame, 
-                                        road_details[key]["centroid"], 
+        road_details_frame = draw_arrow(road_details_frame,
+                                        road_details[key]["centroid"],
                                         length=road_details[key]["median_speed"],
                                         angle=road_details[key]["median_angle"])
-        cv2.putText(road_details_frame, str(key), road_details[key]["centroid"], font, 1, (255, 255, 0), 2)
+        cv2.putText(road_details_frame, str(key),
+                    road_details[key]["centroid"], font, 1, (255, 255, 0), 2)
         #print(road_details[key]["median_speed"], road_details[key]["median_angle"])
         if(curr_frame == 100):
             None
-            #get_max(road_details[key]["speed"])
-
-    
-
-    #Draw points for current frame
-    coordinate_frame = draw(coordinate_frame, same)
+            # get_max(road_details[key]["speed"])
 
     # Generate the background frame to see stalled cars
     background, average = extract_background(frame, average)
-    cv2.imshow("Bg", background)
 
-    #Show the points on top of the video
+    # Draw points for current frame
+    coordinate_frame = draw(coordinate_frame, same)
+
+    # Show the points on top of the video
     mask = road_boundaries
     mask = cv2.bitwise_or(mask, road_details_frame)
     mask = cv2.bitwise_or(mask, coordinate_frame)
@@ -132,6 +141,25 @@ for index, row in df.iterrows():
     #print(index, row["index"], row['x'], row['y'])
 
     curr_frame += 1
+
+    # Output the background
+    output_video = cv2.VideoWriter(
+        "../data/temp_frame.avi", fourcc, 20.0, (frame.shape[:2][1], frame.shape[:2][0]))
+    output_video.write(background)
+    output_video.release()
+    
+    if(curr_frame == 80):
+        # Run the model on the background
+        subprocess.run(["python", "evaluate.py", 
+                    "--input", "../../data/temp_frame.avi", 
+                    "--detection_model_path", "./models/resnet18_detrac_nodem",
+                    "--detection_threshold", "0.3",
+                    "--output_dir", "../../data/bgResult"], cwd="../external_code/multisot_c")
+        subprocess.kill()
+
+    # Get the results and parse them
+
+    # Print out if any car found
 
     key = cv2.waitKey(30) & 0xff
     if key == 27:
