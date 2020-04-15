@@ -1,7 +1,8 @@
-documents
-data
-Report.md
+/documents
+/data
+/Report.md
 /external_code
+/deliverables
 __pycache__
 *.jpg
 *.png
