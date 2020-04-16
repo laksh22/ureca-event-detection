@@ -1,5 +1,21 @@
 This is the repository for my undergraduate research project **"Traffic Event Detection Via Object Tracking"** under the URECA program at NTU.
 
+## How to use
+
+First run `cd code` to navigate to the correct folder
+
+```
+usage: main.py [-h] [--tracks TRACKS] mode video data
+
+positional arguments:
+  mode             Pass either 'train' or 'test'
+  video            Path to the video file
+  data             Path where training data is stored (testing) or should be stored (training)
+
+optional arguments:
+  --tracks TRACKS  Path where tracking data is stored or should be stored
+```
+
 ## Objectives
 
 The objective of the project is to identify the following named events in traffic surveillance videos:
