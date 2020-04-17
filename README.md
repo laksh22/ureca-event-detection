@@ -5,16 +5,16 @@ This is the repository for my undergraduate research project **"Traffic Event De
 First run `cd code` to navigate to the correct folder
 
 ```
-usage: main.py [-h] [--tracks TRACKS] mode video data
+usage: main.py [-h] mode video data tracks
 
 positional arguments:
-  mode             Pass either 'train' or 'test'
-  video            Path to the video file
-  data             Path where training data is stored (testing) or should be stored (training)
-
-optional arguments:
-  --tracks TRACKS  Path where tracking data is stored or should be stored
+  mode        Pass either 'train' or 'test'
+  video       Path to the video file
+  data        Path where training data is stored or should be stored
+  tracks      Path where tracking data is stored or should be stored
 ```
+
+> Example: `python main.py train ../../data/49trimmed.avi ../../data/testing/ ../../data/testing/tracks`
 
 ## Objectives
 

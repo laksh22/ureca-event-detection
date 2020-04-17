@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "data", help="Path where training data is stored or should be stored")
     parser.add_argument(
-        "--tracks", help="Path where tracking data is stored (if any)")
+        "tracks", help="Path where tracking data is stored or should be stored")
     args = parser.parse_args()
 
     if(args.mode == "train"):
