@@ -12,8 +12,11 @@ class TrackData:
     # Import the CSV from the specified path and store as a DataFrame
     def csv_to_df(self):
         df = pd.read_csv(self.data_path, index_col=0, header=None)
-        df = df.drop([6, 7], axis=1)
-        df.columns = ["object_id", "left", "top", "width", "height"]
+        if(len(df.columns) == 7):
+            df = df.drop([6, 7], axis=1)
+        else:
+            df = df.drop([6], axis=1)
+        df.columns = ["obj_id", "left", "top", "width", "height"]
         df["frame"] = df.index
         df["index"] = np.arange(len(df))
         df.set_index("index", inplace=True)
@@ -30,6 +33,7 @@ class TrackData:
         return df
 
     # Get bounding boxes DataFrame
+
     def get_boxes(self):
         return self.__boxes
 
