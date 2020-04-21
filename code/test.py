@@ -1,6 +1,6 @@
 import subprocess
 
-from utilities.track_data import TrackData
+from data_types.track_data import TrackData
 
 
 class Tester:

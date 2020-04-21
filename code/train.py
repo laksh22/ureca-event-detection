@@ -3,9 +3,9 @@ import cv2
 import pandas as pd
 import numpy as np
 
-from utilities.track_data import TrackData
-from utilities.scene_data import SceneData
-from utilities.road_data import RoadData
+from data_types.track_data import TrackData
+from data_types.scene_data import SceneData
+from data_types.road_data import RoadData
 from utilities.draw_tool import DrawTool
 
 
@@ -35,8 +35,6 @@ class Trainer:
         # Step 2: Get the road masks from the user
         roads = self.get_roads()
         # Step 3: For each road mask, do inverse Inverse Perspective Mapping
-
-        # TODO: Create the scene object based on the 2D road maps
         self.scene = SceneData(roads)
 
         while(True):

@@ -48,11 +48,10 @@ The objective of the project is to identify the following named events in traffi
 
 1. The video is passed through a tracker like Deep SORT to **get tracking information** of the cars✔️
 2. The tracker output is converted to a **Pandas DataFrame**✔️
-3. The CSV data will be used to **assign one of the pre-determined 2D mapped roads** to the object
-4. For each frame, the **speed and direction** of each object will be matched to that of its corresponding track
-5. The **Robust Z-Score Method** will be used to check if the object is anomalous
-6. For each frame, the **number of cars** for each track will be calculated and anomalous cars will be identified using the **Robust Z-Score Method**
-7. The background plate version of the video will be exported and passed through tracker to **identify stalled cars**
+3. For each frame, the **speed and direction** of each object will be matched to that of its corresponding track
+4. The **Robust Z-Score Method** will be used to check if the object is anomalous
+5. For each frame, the **number of cars** for each track will be calculated and anomalous cars will be identified using the **Robust Z-Score Method**
+6. The background plate version of the video will be exported and passed through a tracker to **identify stalled cars**
 
 ## Helpful Links
 

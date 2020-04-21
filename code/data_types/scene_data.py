@@ -1,7 +1,7 @@
 import pandas as pd
 
-from utilities.road_data import RoadData
-from utilities.object_data import ObjectData
+from data_types.road_data import RoadData
+from data_types.object_data import ObjectData
 
 
 class SceneData:

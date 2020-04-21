@@ -1,18 +1,22 @@
 import matplotlib.path as mPath
+import numpy as np
 
 from utilities.utils import get_median
+from utilities.perspective import Perspective
 
 
 class RoadData:
     # Constructor
     def __init__(self, id, boundaries):
+        self.perspective = Perspective(boundaries)
+        self.path = mPath.Path(self.perspective.dst)
+
         self.id = id
         self.boundaries = boundaries
         self.speed_list = []
         self.direction_list = []
         self.traffic_list = []
         self.current_traffic_count = 0
-        self.path = mPath.Path(self.boundaries)
 
     def update_traffic_count(self):
         self.current_traffic_count += 1
@@ -43,6 +47,9 @@ class RoadData:
         return self.id
 
     def contains(self, pts):
+        pts = np.array([[pts[0], pts[1]]], dtype='float32')
+        pts = np.array([pts])
+        pts = self.perspective.transform_pts(pts)[0][0]
         return self.path.contains_point([pts[0], pts[1]])
 
     def debug(self):
