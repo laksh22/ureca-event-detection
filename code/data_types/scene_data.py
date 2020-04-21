@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from data_types.road_data import RoadData
 from data_types.object_data import ObjectData
@@ -6,9 +7,27 @@ from data_types.object_data import ObjectData
 
 class SceneData:
     # Constructor
-    def __init__(self, road_boundaries):
+    def __init__(self):
         self.roads = []
         self.objects = {}
+
+    def make_testing_scene_data(self, scene_data_path):
+        data = pd.read_csv(scene_data_path)
+        for index, row in data.iterrows():
+            boundary_0 = list(map(int, eval(row.boundary_0)))
+            boundary_1 = list(map(int, eval(row.boundary_1)))
+            boundary_2 = list(map(int, eval(row.boundary_2)))
+            boundary_3 = list(map(int, eval(row.boundary_3)))
+            road_boundaries = np.array(
+                [boundary_0, boundary_1, boundary_2, boundary_3])
+
+            road = RoadData(int(row.id), road_boundaries)
+            road.set_trained_params(float(row.speed), float(
+                row.direction), float(row.traffic))
+            road.debug_trained()
+            self.roads.append(road)
+
+    def make_training_scene_data(self, road_boundaries):
         for i in range(len(road_boundaries)):
             self.roads.append(RoadData(i, road_boundaries[i]))
 
@@ -43,10 +62,15 @@ class SceneData:
     def save(self, data_path):
         df = []
         for i in range(len(self.roads)):
+            print(self.roads[i].get_boundaries())
+            road_boundaries = self.roads[i].get_boundaries()
             df.append(
                 {
                     "id": self.roads[i].get_id(),
-                    "boundary": self.roads[i].get_boundaries(),
+                    "boundary_0": [road_boundaries[0][0], road_boundaries[0][1]],
+                    "boundary_1": [road_boundaries[1][0], road_boundaries[1][1]],
+                    "boundary_2": [road_boundaries[2][0], road_boundaries[2][1]],
+                    "boundary_3": [road_boundaries[3][0], road_boundaries[3][1]],
                     "speed": self.roads[i].get_median_speed(),
                     "direction": self.roads[i].get_median_direction(),
                     "traffic": self.roads[i].get_median_traffic(),
@@ -54,4 +78,4 @@ class SceneData:
             )
 
         df = pd.DataFrame(df)
-        df.to_csv(f'{data_path}/data.txt')
+        df.to_csv(f'{data_path}/data.csv')

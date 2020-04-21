@@ -35,7 +35,8 @@ class Trainer:
         # Step 2: Get the road masks from the user
         roads = self.get_roads()
         # Step 3: For each road mask, do inverse Inverse Perspective Mapping
-        self.scene = SceneData(roads)
+        self.scene = SceneData()
+        self.scene.make_training_scene_data(roads)
 
         while(True):
             playing, frame = self.capture.read()

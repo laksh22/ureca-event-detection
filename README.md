@@ -14,10 +14,13 @@ positional arguments:
   tracks      Path where tracking data is stored or should be stored
 ```
 
-> Example: `python main.py train ../data/main/video.mp4 ../data/main ../data/main/tracks.txt`
+> Example (training): `python main.py train ../data/main/video.mp4 ../data/main ../data/main/tracks.txt`
 > or
 > `python main.py train ../data/short/NoStall.avi ../data/short ../data/short`
-> ``
+
+> Example (testing): `python main.py train ../data/main/video.mp4 ../data/main/data.csv ../data/main/tracks.txt`
+> or
+> `python main.py train ../data/short/NoStall.avi ../data/short ../data/short`
 
 ## Objectives
 
@@ -35,23 +38,27 @@ The objective of the project is to identify the following named events in traffi
 1. The video is passed through a tracker like Deep SORT to **get tracking information** of the cars✔️
 2. The tracker output is converted to a **Pandas DataFrame**✔️
 3. The user is asked to draw the **road masks** for the scene✔️
-4. The road masks will be used to generate 2D maps of each road through **inverse perspective mapping**
+4. The road masks will be used to generate 2D maps of each road through **inverse perspective mapping**✔️
 5. The tracking data is again used to find the **median speed**, **median direction**, and **median traffic density** of each of the 2D maps of the roads of the video.✔️
 6. For each video, the trained data will be saved as a CSV file with the following format:✔️
 
-| S. No. | Road ID |         Road Boundary Points         | Median Speed | Median Direction | Median Traffic Density |
-| :----: | :-----: | :----------------------------------: | ------------ | ---------------- | ---------------------- |
-|   1    |    1    |     (1,2), (2,4), (3, 6), (5,8)      | 0.5          | 2.1              | 12                     |
-|   2    |    2    | (11,12), (12,19), (13, 26), (15, 29) | 0.9          | -0.3             | 7                      |
+| Road ID | Boundary 0 | Boundary 1 | Boundary 2 | Boundary 3 | Median Speed | Median Direction | Median Traffic |
+| :-----: | :--------: | :--------: | ---------- | ---------- | ------------ | ---------------- | -------------- |
+|    1    |   [0, 0]   |   [0, 0]   | [0, 0]     | [0, 0]     | 4.1          | -2.57            | 4.3            |
 
 ### Testing
 
 1. The video is passed through a tracker like Deep SORT to **get tracking information** of the cars✔️
 2. The tracker output is converted to a **Pandas DataFrame**✔️
-3. For each frame, the **speed and direction** of each object will be matched to that of its corresponding track
-4. The **Robust Z-Score Method** will be used to check if the object is anomalous
-5. For each frame, the **number of cars** for each track will be calculated and anomalous cars will be identified using the **Robust Z-Score Method**
-6. The background plate version of the video will be exported and passed through a tracker to **identify stalled cars**
+3. The training data CSV will be used to reconstruct the 2D mapped roads✔️
+4. For each frame, the  **Robust Z-Score Method** will be used to check if there are any anomalous speeds, directions, or traffic levels
+5. The background plate version of the video will be exported and passed through a tracker to **identify stalled cars**
+6. The anomalous data will be saved as a CSV file with the following format:  
+
+| S. No. | Frame |     Type      | X   | Y   |
+| :----: | :---: | :-----------: | --- | --- |
+|   1    |  174  |  Stalled Car  | 23  | 58  |
+|   2    |  208  | Over-Speeding | 526 | 127 |
 
 ## Helpful Links
 

@@ -8,15 +8,21 @@ from utilities.perspective import Perspective
 class RoadData:
     # Constructor
     def __init__(self, id, boundaries):
-        self.perspective = Perspective(boundaries)
-        self.path = mPath.Path(self.perspective.dst)
-
         self.id = id
         self.boundaries = boundaries
         self.speed_list = []
         self.direction_list = []
         self.traffic_list = []
         self.current_traffic_count = 0
+
+        self.perspective = Perspective(boundaries)
+        self.path = mPath.Path(self.perspective.dst)
+
+    # Constructor for testing stage
+    def set_trained_params(self, speed, direction, traffic):
+        self.speed = speed
+        self.direction = direction
+        self.traffic = traffic
 
     def update_traffic_count(self):
         self.current_traffic_count += 1
@@ -55,3 +61,7 @@ class RoadData:
     def debug(self):
         print(
             f'ID: {self.get_id()} | Speed : {self.get_median_speed()} | Direction: {self.get_median_direction()} | Traffic: {self.get_median_traffic()}')
+
+    def debug_trained(self):
+        print(
+            f'ID: {self.get_id()} | Speed : {self.speed} | Direction: {self.direction} | Traffic: {self.traffic}')
