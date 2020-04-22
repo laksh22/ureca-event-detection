@@ -6,12 +6,13 @@ import numpy as np
 from data_types.track_data import TrackData
 from data_types.scene_data import SceneData
 from data_types.road_data import RoadData
+from data_types.anomaly_data import AnomalyData
 from utilities.draw_tool import DrawTool
 
 
 class Tester:
     # Constructor
-    def __init__(self, video_path, data_path, tracks_path=None):
+    def __init__(self, video_path, data_path, tracks_path=None, anomalies_path=None):
         self.video_path = video_path
         self.data_path = data_path
         if ".txt" not in tracks_path:
@@ -24,6 +25,7 @@ class Tester:
         self.coordinates = self.tracks_data.get_coordinates()
 
         # Initialise helper variables
+        self.anomaly_data = AnomalyData(anomalies_path)
         self.draw_tool = DrawTool()
         self.capture = cv2.VideoCapture(video_path)
         self.frame_number = 1
@@ -32,7 +34,7 @@ class Tester:
     def test(self):
         # Step 2: Convert trained data to 2D mapped SceneData
         self.scene = SceneData()
-        self.scene.make_testing_scene_data(self.data_path)
+        self.scene.make_testing_scene_data(self.data_path, self.anomaly_data)
 
         while(True):
             playing, frame = self.capture.read()
@@ -45,7 +47,9 @@ class Tester:
                                                       == self.frame_number]
             self.scene.find_anomalies(self.frame_objects)
 
-            # Step 4: Extract background plate of video at every frame and export as video
+            # TODO: If any anomalous data, show on frame
+
+            # TODO: Step 4: Extract background plate of video at every frame and export as video
 
             self.draw_image(frame, coordinates=True)
             key = cv2.waitKey(30) & 0xff
@@ -54,9 +58,11 @@ class Tester:
 
             self.frame_number += 1
 
-        # Step 5: Pass background plate video through tracker to identify stalled cars
+        self.anomaly_data.save_anomalies()
 
-    # Pass video through tracker to get tracking data
+        # TODO: Step 5: Pass background plate video through tracker to identify stalled cars
+
+        # Pass video through tracker to get tracking data
 
     def track(self, video_path, tracks_path):
         video_name = (video_path.split("/")[-1]).split(".")[0]

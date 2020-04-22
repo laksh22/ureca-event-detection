@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pandas as pd
 
 
 def get_distance(p1, p2):
@@ -7,12 +8,25 @@ def get_distance(p1, p2):
 
 
 def get_direction(p1, p2):
-    return math.atan2(p2[1]-p1[1], p2[0]-p1[0])
+    return math.degrees(math.atan2(p2[1]-p1[1], p2[0]-p1[0]))
 
 
-def get_median(xs):
-    mid = len(xs) // 2
-    if len(xs) % 2 == 1:  # check if the len of list is odd
-        return sorted(xs)[mid]
+def get_median(values):
+    mid = len(values) // 2
+    if len(values) % 2 == 1:  # check if the len of list is odd
+        return sorted(values)[mid]
     else:
-        return 0.5 * np.sum(sorted(xs)[mid - 1:mid + 1])
+        return 0.5 * np.sum(sorted(values)[mid - 1:mid + 1])
+
+
+def get_mad(values):
+    df = pd.DataFrame()
+    df["values"] = values
+    return df["values"].mad()
+
+
+def is_anomalous(value, median, mad):
+    z_score = 0.6745*(value-median)/mad
+    if(z_score > 3.5):
+        return True
+    return False

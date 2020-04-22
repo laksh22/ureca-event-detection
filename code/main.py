@@ -13,11 +13,14 @@ if __name__ == "__main__":
         "data", help="Path where training data is stored or should be stored")
     parser.add_argument(
         "tracks", help="Path where tracking data is stored or should be stored")
+    parser.add_argument(
+        "--anomalies", help="Path where anomaly data should be stored after testing")
     args = parser.parse_args()
 
     if(args.mode == "train"):
         trainer = Trainer(args.video, args.data, args.tracks)
         trainer.train()
     else:
-        tester = Tester(args.video, args.data, args.tracks)
+        tester = Tester(args.video, args.data,
+                        tracks_path=args.tracks, anomalies_path=args.anomalies)
         tester.test()

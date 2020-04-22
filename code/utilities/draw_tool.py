@@ -39,24 +39,6 @@ class DrawTool:
 
         return np.asarray(self.shapes[:-1])*2
 
-    # TODO: Remove
-    def get_perspective_src(self, background):
-        self.img = cv2.resize(
-            background, (int(background.shape[:2][1]/2), int(background.shape[:2][0]/2)))
-
-        cv2.setMouseCallback('image', self.click_event)
-
-        while(True):
-            cv2.setMouseCallback('image', self.click_event)
-            cv2.imshow('image', self.img)
-            k = cv2.waitKey(1) & 0xFF
-            if k == 27 or len(self.shapes[0]) == 4:  # Escape KEY
-                break
-
-        cv2.destroyAllWindows()
-
-        return (np.asarray(self.shapes[0])*2)[0]
-
     def click_event(self, event, x, y, flags, param):
         font = cv2.FONT_HERSHEY_SIMPLEX
 
