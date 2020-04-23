@@ -10,6 +10,8 @@ def get_distance(p1, p2):
 def get_direction(p1, p2):
     return math.degrees(math.atan2(p2[1]-p1[1], p2[0]-p1[0]))
 
+def get_mean(values):
+    return sum(values)/len(values)
 
 def get_median(values):
     mid = len(values) // 2

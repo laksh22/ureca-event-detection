@@ -68,7 +68,7 @@ class RoadData:
         return self.id
 
     def check_anomalous_speed(self, object_speed):
-        return is_anomalous(object_speed, self.speed, self.speed_mad)
+        return is_anomalous(object_speed, self.speed, self.speed_mad) and abs(object_speed) > abs(self.speed)
 
     def check_anomalous_direction(self, object_direction):
         diff = self.direction-object_direction

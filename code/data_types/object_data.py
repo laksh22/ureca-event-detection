@@ -1,6 +1,6 @@
 import numpy as np
 
-from utilities.utils import get_distance, get_direction
+from utilities.utils import get_distance, get_direction, get_mean
 
 
 class ObjectData:
@@ -8,6 +8,10 @@ class ObjectData:
     def __init__(self, point):
         self.curr_point = point
         self.prev_point = None
+        self.curr_speed = None
+        self.prev_speed = None
+        self.curr_direction = None
+        self.prev_direction = None
         self.speed = None
         self.direction = None
         self.mapper = None
@@ -22,11 +26,21 @@ class ObjectData:
 
     def get_speed(self):
         mapped_prev, mapped_curr = self.get_mapped_prev(), self.get_mapped_curr()
-        return get_distance(mapped_prev, mapped_curr)
+        if(self.prev_speed == None):
+            self.curr_speed = get_distance(mapped_prev, mapped_curr)
+        else:
+            self.curr_speed = get_mean(
+                self.prev_speed, get_distance(mapped_prev, mapped_curr))
+        return self.curr_speed
 
     def get_direction(self):
         mapped_prev, mapped_curr = self.get_mapped_prev(), self.get_mapped_curr()
-        return get_direction(mapped_prev, mapped_curr)
+        if(self.prev_direction == None):
+            self.curr_direction = get_distance(mapped_prev, mapped_curr)
+        else:
+            self.curr_direction = get_mean(
+                self.prev_direction, get_distance(mapped_prev, mapped_curr))
+        return self.curr_direction
 
     def get_mapped_prev(self):
         mapping_input_prev = np.array([np.array(

@@ -89,6 +89,7 @@ class SceneData:
                 for road in self.roads:
                     row_object.mapper = road.perspective
                     if road.contains(row_object.get_position()):
+                        print("CONTAINS")
                         road.add_speed(row_object.get_speed())
                         road.add_direction(row_object.get_direction())
                         road.update_traffic_count()
@@ -99,6 +100,7 @@ class SceneData:
                 for road in self.roads:
                     row_object.mapper = road.perspective
                     if road.contains(row_object.get_position()):
+                        print("CONTAINS")
                         road.update_traffic_count()
 
         # 3. For each road, add traffic count to list
@@ -131,5 +133,4 @@ class SceneData:
             )
 
         df = pd.DataFrame(df)
-        # TODO: Name file based on video name
         df.to_csv(f'{data_path}/{video_name}_data.csv')

@@ -17,10 +17,11 @@ class Tester:
         self.video_path = video_path
         self.data_path = data_path
         if ".txt" not in tracks_path:
-            self.tracks_path = self.track(self.video_path, tracks_path)
+            self.tracks_path = self.track(self.video_path)
         else:
             self.tracks_path = tracks_path
         self.video_name = (video_path.split("/")[-1]).split(".")[0]
+        self.anomalies_path = anomalies_path
 
         # Step 1: Convert self.tracks_path to CSV format
         self.tracks_data = TrackData(self.tracks_path)
@@ -30,7 +31,7 @@ class Tester:
         self.anomaly_data = AnomalyData(anomalies_path)
         self.draw_tool = DrawTool()
         self.capture = cv2.VideoCapture(video_path)
-        self.init_background_extractor(anomalies_path)
+        self.init_background_extractor()
         self.frame_number = 1
 
     # Test the video in comparison to the normal data of the scene
@@ -62,21 +63,31 @@ class Tester:
 
             self.frame_number += 1
 
-        self.anomaly_data.save_anomalies(self.video_name)
         self.background.stop_extraction()
+        self.find_stalled_cars()
+        self.anomaly_data.save_anomalies(self.video_name)
 
         # TODO: Step 5: Pass background plate video through tracker to identify stalled cars
 
         # Pass video through tracker to get tracking data
 
-    def track(self, video_path, tracks_path):
-        # TODO: Make values changeable
+    def track(self, video_path):
         subprocess.run(["python", "evaluate.py",
                         "--input", video_path,
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
                         "--detection_threshold", "0.3",
-                        "--output_dir", tracks_path], cwd="../external_code/multisot_c")
-        return f'{tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
+                        "--output_dir", self.tracks_path], cwd="../external_code/multisot_c")
+        return f'{self.tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
+
+    def find_stalled_cars(self):
+        subprocess.run(["python", "evaluate.py",
+                        "--input", f'{self.anomalies_path}/{self.video_name}_background.avi',
+                        "--detection_model_path", "./models/resnet18_detrac_nodem",
+                        "--detection_threshold", "0.3",
+                        "--output_dir", self.tracks_path], cwd="../external_code/multisot_c")
+        # Load the stalled tracking as a csv
+        # Append the trackings to main anomalies dataframe
+        # Sort the anomalies dataframe based on frame number
 
     # Show the frame of the video with additional information if needed
     def draw_image(self, frame, coordinates=False):
@@ -89,10 +100,10 @@ class Tester:
         cv2.addWeighted(mask, 0.5, frame, 0.5, 0, frame)
         cv2.imshow("Video", frame)
 
-    def init_background_extractor(self, anomalies_path):
+    def init_background_extractor(self):
         _, frame = self.capture.read()
         self.background = BackgroundExtractor(
-            frame, f'{anomalies_path}/{self.video_name}_background.avi')
+            frame, f'{self.anomalies_path}/{self.video_name}_background.avi')
         self.refresh_video()
 
     # Release current video capture and restart
