@@ -108,7 +108,7 @@ class SceneData:
 
     # Save the scene data in CSV format
 
-    def save(self, data_path):
+    def save(self, data_path, video_name):
         df = []
         for i in range(len(self.roads)):
 
@@ -131,4 +131,5 @@ class SceneData:
             )
 
         df = pd.DataFrame(df)
-        df.to_csv(f'{data_path}/data.csv')
+        # TODO: Name file based on video name
+        df.to_csv(f'{data_path}/{video_name}_data.csv')

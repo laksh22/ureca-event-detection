@@ -19,6 +19,7 @@ class Trainer:
             self.tracks_path = self.track(self.video_path, tracks_path)
         else:
             self.tracks_path = tracks_path
+        self.video_name = (video_path.split("/")[-1]).split(".")[0]
 
         # Step 1: Convert self.tracks_path to CSV format
         self.tracks_data = TrackData(self.tracks_path)
@@ -57,7 +58,7 @@ class Trainer:
             self.frame_number += 1
 
         # Step 5: Save the scene data in CSV format
-        self.scene.save(self.output_path)
+        self.scene.save(self.output_path, self.video_name)
 
     # Show the frame of the video with additional information if needed
     def draw_image(self, frame, coordinates=False):
@@ -72,14 +73,13 @@ class Trainer:
 
     # Pass video through tracker to get tracking data
     def track(self, video_path, tracks_path):
-        video_name = (video_path.split("/")[-1]).split(".")[0]
         # TODO: Make values changeable
         subprocess.run(["python", "evaluate.py",
                         "--input", f'../{video_path}',
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
                         "--detection_threshold", "0.3",
                         "--output_dir", f'../{tracks_path}'], cwd="../external_code/multisot_c")
-        return f'{tracks_path.replace("../../", "../")}/{video_name}_track.txt'
+        return f'{tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
 
     # Get the road boundaries for this scene
     def get_roads(self):

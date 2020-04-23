@@ -12,6 +12,7 @@ class ObjectData:
         self.direction = None
         self.mapper = None
 
+    # TODO: Use smoothing algorithm
     def update_object(self, point):
         self.prev_point = self.curr_point
         self.curr_point = point

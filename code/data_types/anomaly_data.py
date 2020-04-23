@@ -45,9 +45,10 @@ class AnomalyData:
             self.anomalies.append(self.direction_anomaly)
             self.direction_anomaly = 0
 
-    def save_anomalies(self):
+    def save_anomalies(self, video_name):
         self.anomalies = pd.DataFrame(self.anomalies)
-        self.anomalies.to_csv(f'{self.output_path}/anomalies.csv')
+        # TODO: Name file based on video name
+        self.anomalies.to_csv(f'{self.output_path}/{video_name}_anomalies.csv')
 
     def debug(self, frame, anomaly_type, x, y, value, road):
         print(
