@@ -76,7 +76,7 @@ class Trainer:
         subprocess.run(["python", "evaluate.py",
                         "--input", f'../{video_path}',
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
-                        "--detection_threshold", "0.3",
+                        "--detection_threshold", "0.7",
                         "--output_dir", f'../{self.tracks_path}'], cwd="../external_code/multisot_c")
         return f'{self.tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
 

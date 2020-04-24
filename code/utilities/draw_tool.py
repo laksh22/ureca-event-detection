@@ -22,6 +22,21 @@ class DrawTool:
             cv2.circle(coordinate_frame, (int(row.x), int(row.y)), 2, color, 2)
         return coordinate_frame
 
+    def draw_anomalies(self, frame, frame_objects, color=(0, 0, 255)):
+        coordinate_frame = np.zeros(
+            (frame.shape[:2][0], frame.shape[:2][1], 3), np.uint8)
+        for index, row in frame_objects.iterrows():
+            if row.type == "stall":
+                color = (0, 255, 0)
+            elif row.type == "speed":
+                color = (0, 0, 255)
+            elif row.type == "direction":
+                color = (255, 0, 0)
+            elif row.type == "traffic":
+                color = (255, 255, 0)
+            cv2.circle(coordinate_frame, (int(row.x), int(row.y)), 2, color, 2)
+        return coordinate_frame
+
     def get_road_boundaries(self, background):
         self.img = cv2.resize(
             background, (int(background.shape[:2][1]/2), int(background.shape[:2][0]/2)))

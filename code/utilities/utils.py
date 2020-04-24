@@ -10,8 +10,10 @@ def get_distance(p1, p2):
 def get_direction(p1, p2):
     return math.degrees(math.atan2(p2[1]-p1[1], p2[0]-p1[0]))
 
+
 def get_mean(values):
     return sum(values)/len(values)
+
 
 def get_median(values):
     mid = len(values) // 2
@@ -29,6 +31,6 @@ def get_mad(values):
 
 def is_anomalous(value, median, mad):
     z_score = 0.6745*(value-median)/mad
-    if(z_score > 3.5):
+    if(abs(z_score) > 3.75):
         return True
     return False
