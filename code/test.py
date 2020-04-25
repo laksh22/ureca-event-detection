@@ -14,13 +14,13 @@ from utilities.background_extractor import BackgroundExtractor
 class Tester:
     # Constructor
     def __init__(self, video_path, data_path, tracks_path=None, anomalies_path=None):
+        self.video_name = (video_path.split("/")[-1]).split(".")[0]
         self.video_path = video_path
         self.data_path = data_path
         if ".txt" not in tracks_path:
             self.tracks_path = self.track(self.video_path)
         else:
             self.tracks_path = tracks_path
-        self.video_name = (video_path.split("/")[-1]).split(".")[0]
         self.anomalies_path = anomalies_path
 
         # Step 1: Convert self.tracks_path to CSV format
@@ -52,8 +52,7 @@ class Tester:
             self.scene.find_anomalies(self.frame_objects)
 
             # Step 4: Extract background plate of video at every frame and export as video
-            if self.frame_number > 150:
-                self.background.extract_background(frame)
+            self.background.extract_background(frame)
 
             self.draw_image(frame, coordinates=True)
             key = cv2.waitKey(30) & 0xff
@@ -67,11 +66,12 @@ class Tester:
 
         # Step 5: Pass background plate video through tracker to identify stalled cars
         self.find_stalled_cars()
-        self.anomaly_data.save_anomalies(self.video_name)
+        anomalies_exist = self.anomaly_data.save_anomalies(self.video_name)
 
-        # Show video with anomalous data
-        self.scene.anomaly_data.show_anomalies(
-            self.video_path, self.video_name)
+        if anomalies_exist:
+            # Show video with anomalous data
+            self.scene.anomaly_data.show_anomalies(
+                self.video_path, self.video_name)
 
     # Pass video through tracker to get tracking data
     def track(self, video_path):
@@ -86,11 +86,13 @@ class Tester:
         subprocess.run(["python", "evaluate.py",
                         "--input", f'../{self.anomalies_path}/{self.video_name}_background.avi',
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
-                        "--detection_threshold", "0.8",
+                        "--detection_threshold", "0.2",
                         "--output_dir", f'../{self.anomalies_path}/{self.video_name}_stalls'], cwd="../external_code/multisot_c")
         stall_data = TrackData(
-            f'{self.anomalies_path}/{self.video_name}_stalls/{self.video_name}_background_track.txt')
+            f'{self.anomalies_path}/{self.video_name}_stalls/{self.video_name}_background_Det.txt')
         stall_coordinates = stall_data.get_coordinates()
+        stall_coordinates = stall_coordinates.drop(
+            stall_coordinates[stall_coordinates.frame < 300].index)
         self.scene.anomaly_data.insert_anomalies(stall_coordinates)
 
     # Show the frame of the video with additional information if needed

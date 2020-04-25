@@ -63,8 +63,14 @@ class AnomalyData:
 
     def save_anomalies(self, video_name):
         self.anomalies = pd.DataFrame(self.anomalies)
-        self.anomalies = self.anomalies.sort_values(by=['frame'])
-        self.anomalies.to_csv(f'{self.output_path}/{video_name}_anomalies.csv')
+        if not self.anomalies.empty:
+            self.anomalies = self.anomalies.sort_values(by=['frame'])
+            self.anomalies.to_csv(
+                f'{self.output_path}/{video_name}_anomalies.csv')
+            return True
+        else:
+            print("No anomalies")
+            return False
 
     def show_anomalies(self, video_path, video_name):
         self.draw_tool = DrawTool()

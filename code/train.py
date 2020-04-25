@@ -13,13 +13,13 @@ class Trainer:
     # Constructor
     def __init__(self, video_path, output_path, tracks_path):
         # Initialise path variables
+        self.video_name = (video_path.split("/")[-1]).split(".")[0]
         self.video_path = video_path
         self.output_path = output_path
         if ".txt" not in tracks_path:
-            self.tracks_path = self.track(self.video_path)
+            self.tracks_path = self.track(self.video_path, tracks_path)
         else:
             self.tracks_path = tracks_path
-        self.video_name = (video_path.split("/")[-1]).split(".")[0]
 
         # Step 1: Convert self.tracks_path to CSV format
         self.tracks_data = TrackData(self.tracks_path)
@@ -72,13 +72,13 @@ class Trainer:
         cv2.imshow("Video", frame)
 
     # Pass video through tracker to get tracking data
-    def track(self, video_path):
+    def track(self, video_path, tracks_path):
         subprocess.run(["python", "evaluate.py",
                         "--input", f'../{video_path}',
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
                         "--detection_threshold", "0.7",
-                        "--output_dir", f'../{self.tracks_path}'], cwd="../external_code/multisot_c")
-        return f'{self.tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
+                        "--output_dir", f'../{tracks_path}'], cwd="../external_code/multisot_c")
+        return f'{tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
 
     # Get the road boundaries for this scene
     def get_roads(self):
