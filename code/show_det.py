@@ -2,10 +2,10 @@ import cv2
 import pandas as pd
 import numpy as np
 
-scene_num = 2
+scene_num = 97
 video_name = f'{scene_num}_test'
-video_path = f'../data/stall_test/2/{video_name}_background.avi'
-det_path = f'../data/stall_test/2/{video_name}_stalls/{video_name}_background_Det.txt'
+video_path = f'../data/stall_test/{scene_num}/{video_name}_background.avi'
+det_path = f'../data/stall_test/{scene_num}/{video_name}_stalls/{video_name}_background_Det.txt'
 
 
 def draw_image(frame, coordinates):
@@ -14,7 +14,15 @@ def draw_image(frame, coordinates):
     coordinate_frame = draw_coordinates(frame, coordinates)
     mask = cv2.bitwise_or(mask, coordinate_frame)
     cv2.addWeighted(mask, 0.5, frame, 0.5, 0, frame)
-    cv2.imshow("Video", frame)
+
+    scale_percent = 60  # percent of original size
+    width = int(frame.shape[1] * scale_percent / 100)
+    height = int(frame.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    # resize image
+    resized = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
+    cv2.imshow("Video", resized)
 
 
 def draw_coordinates(frame, frame_objects, color=(0, 0, 255)):
@@ -47,7 +55,7 @@ frame_num = 1
 while(True):
     playing, frame = capture.read()
     if not playing:
-        print("---The training for this video is complete---")
+        print("---Video finished---")
         break
 
     frame_objects = detections.loc[detections['frame']

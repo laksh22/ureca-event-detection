@@ -69,6 +69,14 @@ class Trainer:
                 frame, self.frame_objects)
             mask = cv2.bitwise_or(mask, coordinate_frame)
         cv2.addWeighted(mask, 0.5, frame, 0.5, 0, frame)
+
+        scale_percent = 60  # percent of original size
+        width = int(frame.shape[1] * scale_percent / 100)
+        height = int(frame.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        # resize image
+        resized = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
         cv2.imshow("Video", frame)
 
     # Pass video through tracker to get tracking data
