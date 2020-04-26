@@ -71,10 +71,7 @@ class RoadData:
         return is_anomalous(object_speed, self.speed, self.speed_mad) and abs(object_speed) > abs(self.speed)
 
     def check_anomalous_direction(self, object_direction):
-        diff = abs(self.direction-object_direction)
-        if diff > 150:
-            return True
-        return False
+        return is_anomalous(object_direction, self.direction, self.direction_mad)
 
     def check_anomalous_traffic(self):
         latest_traffic = self.get_latest_traffic_level()

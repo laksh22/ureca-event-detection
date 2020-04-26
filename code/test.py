@@ -18,7 +18,7 @@ class Tester:
         self.video_path = video_path
         self.data_path = data_path
         if ".txt" not in tracks_path:
-            self.tracks_path = self.track(self.video_path)
+            self.tracks_path = self.track(self.video_path, tracks_path)
         else:
             self.tracks_path = tracks_path
         self.anomalies_path = anomalies_path
@@ -74,13 +74,13 @@ class Tester:
                 self.video_path, self.video_name)
 
     # Pass video through tracker to get tracking data
-    def track(self, video_path):
+    def track(self, video_path, tracks_path):
         subprocess.run(["python", "evaluate.py",
-                        "--input", video_path,
+                        "--input", f'../{video_path}',
                         "--detection_model_path", "./models/resnet18_detrac_nodem",
                         "--detection_threshold", "0.3",
-                        "--output_dir", self.tracks_path], cwd="../external_code/multisot_c")
-        return f'{self.tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
+                        "--output_dir", f'../{tracks_path}'], cwd="../external_code/multisot_c")
+        return f'{tracks_path.replace("../../", "../")}/{self.video_name}_track.txt'
 
     def find_stalled_cars(self):
         subprocess.run(["python", "evaluate.py",
