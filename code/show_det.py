@@ -2,10 +2,10 @@ import cv2
 import pandas as pd
 import numpy as np
 
-scene_num = 97
+scene_num = 1
 video_name = f'{scene_num}_test'
-video_path = f'../data/stall_test/{scene_num}/{video_name}_background.avi'
-det_path = f'../data/stall_test/{scene_num}/{video_name}_stalls/{video_name}_background_Det.txt'
+video_path = f'../data/traffic_test/{video_name}.mp4'
+det_path = f'../data/traffic_test/{video_name}_Det.txt'
 
 
 def draw_image(frame, coordinates):

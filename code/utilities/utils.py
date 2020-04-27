@@ -33,6 +33,6 @@ def is_anomalous(value, median, mad):
     if mad == 0:
         mad = 1
     z_score = 0.6745*(value-median)/mad
-    if(abs(z_score) > 3.75):
+    if(abs(z_score) > 3.50):
         return True
     return False

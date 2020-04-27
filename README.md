@@ -20,7 +20,7 @@ positional arguments:
 
 > Example (testing): `python main.py test ../data/main/video.mp4 ../data/main/video_data.csv ../data/main/tracks.txt --anomalies=../data/main`
 > or
-> `python main.py test ../data/short/NoStall.avi ../data/short ../data/short --anomalies=../data/main`
+> `python main.py test ../data/short/NoStall.avi ../data/short ../data/short/NoStall_data.csv --anomalies=../data/main`
 
 ## Objectives
 

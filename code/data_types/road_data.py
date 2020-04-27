@@ -75,7 +75,7 @@ class RoadData:
 
     def check_anomalous_traffic(self):
         latest_traffic = self.get_latest_traffic_level()
-        return is_anomalous(latest_traffic, self.traffic, self.traffic_mad)
+        return is_anomalous(latest_traffic, self.traffic, self.traffic_mad) and latest_traffic > self.traffic
 
     def contains(self, pts):
         pts = np.array([[pts[0], pts[1]]], dtype='float32')
